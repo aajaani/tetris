@@ -90,7 +90,7 @@ def main():
         if pygame.key.get_pressed()[pygame.K_DOWN]:
             if current_time - move_time > move_down_time:
                 if not check_collision(current_tetromino.shape, 0, BLOCK):
-                    current_tetromino.move(0, BLOCK)gi
+                    current_tetromino.move(0, BLOCK)
                     move_time = current_time
                 else:
                     landed_tetromino()
