@@ -1,12 +1,12 @@
-# tetrise ekraani suurus
-VEERUD=10
-READ=20
-BLOCK=30 #üks ühik, millest blokk koosneb
-LAIUS=BLOCK*VEERUD
-KÕRGUS=BLOCK*READ
+# Tetris screen size
+VEERUD = 10
+READ = 20
+BLOCK = 30  # A single unit that makes up a block
+LAIUS = BLOCK * VEERUD
+KÕRGUS = BLOCK * READ
 
-
-GREY=(128, 128, 128)
+# Colors
+GREY = (128, 128, 128)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -18,6 +18,7 @@ ORANGE = (255, 165, 0)
 CYAN = (0, 255, 255)
 COLORS = [RED, GREEN, BLUE, YELLOW, PURPLE, ORANGE, CYAN]
 
+# Tetromino shapes and colors
 TETROMINOS = {
     "I": {"shape": [(0, 1), (0, 0), (0, -1), (0, -2)], "color": CYAN},
     "O": {"shape": [(0, 0), (0, 1), (1, 0), (1, 1)], "color": YELLOW},

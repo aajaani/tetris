@@ -1,28 +1,53 @@
 import pygame
 import sys
-from pygame.locals import*
+import json
 import random
+from pygame.locals import *
 from klassid import*
 from konstandid import*
 
-# Bloki liikumine alla timer
+# Load settings from JSON file
+def load_settings():
+    try:
+        with open('settings.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        # If no settings file, create one with default values
+        settings = {"columns": VEERUD, "rows": READ}
+        save_settings(settings)
+        return settings
+
+# Save settings to JSON file
+def save_settings(settings):
+    with open('settings.json', 'w') as f:
+        json.dump(settings, f)
+
+# Initialize settings
+settings = load_settings()
+VEERUD = settings.get('columns', 10)
+READ = settings.get('rows', 20)
+LAIUS = BLOCK * VEERUD
+KÕRGUS = BLOCK * READ
+
+# Block movement down timer
 move_wait = 350
 move_down_time = 100
 
-screen = pygame.display.set_mode((LAIUS, KÕRGUS))
-
-def grid(): #joonistab grid
-    for x in range(0, LAIUS, BLOCK):
-        pygame.draw.line(screen, GREY, (x, 0), (x, KÕRGUS), 1)
-    for y in range(0, KÕRGUS, BLOCK):
-        pygame.draw.line(screen, GREY, (0, y), (LAIUS, y), 1)
-
+# Main game function
 def main():
     pygame.init()
     pygame.display.set_caption("Tetris")
+
+    screen = pygame.display.set_mode((LAIUS, KÕRGUS))
     move_time = pygame.time.get_ticks()
-    current_tetromino = Tetromino(TETROMINOS["I"]["shape"], TETROMINOS["I"]["color"], LAIUS // 2, BLOCK * 2) #loob tetromino klassist objekti
-    landed_data = [] #hoiab arvet, mis blokid juba kukkunud
+    current_tetromino = Tetromino(TETROMINOS["I"]["shape"], TETROMINOS["I"]["color"], LAIUS // 2, BLOCK * 2)
+    landed_data = []
+
+    def grid():  # joonistab grid
+        for x in range(0, LAIUS, BLOCK):
+            pygame.draw.line(screen, GREY, (x, 0), (x, KÕRGUS), 1)
+        for y in range(0, KÕRGUS, BLOCK):
+            pygame.draw.line(screen, GREY, (0, y), (LAIUS, y), 1)
 
     def check_collision(shape, dx, dy): #blokkidevaheline collision
         for coord in shape:
@@ -103,4 +128,5 @@ def main():
         pygame.display.update()
 
 if __name__ == "__main__":
-    main()
+    from menu import run_menu  # Importing the menu
+    run_menu(main)
