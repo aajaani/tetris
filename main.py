@@ -5,6 +5,8 @@ import random
 from pygame.locals import *
 from klassid import*
 from konstandid import*
+from menu import run_menu  # Importing the menu
+
 
 # Load settings from JSON file
 def load_settings():
@@ -23,11 +25,6 @@ def save_settings(settings):
         json.dump(settings, f)
 
 # Initialize settings
-settings = load_settings()
-VEERUD = settings.get('columns', 10)
-READ = settings.get('rows', 20)
-LAIUS = BLOCK * VEERUD
-KÕRGUS = BLOCK * READ
 
 # Block movement down timer
 move_wait = 350
@@ -35,12 +32,19 @@ move_down_time = 100
 
 # Main game function
 def main():
+    settings = load_settings()
+    VEERUD = settings.get('columns', 10)
+    READ = settings.get('rows', 20)
+    LAIUS = BLOCK * VEERUD
+    KÕRGUS = BLOCK * READ
+
     pygame.init()
     pygame.display.set_caption("Tetris")
-
+    clock=pygame.time.Clock()
+    clock.tick(FPS)
     screen = pygame.display.set_mode((LAIUS, KÕRGUS))
     move_time = pygame.time.get_ticks()
-    current_tetromino = Tetromino(TETROMINOS["I"]["shape"], TETROMINOS["I"]["color"], LAIUS // 2, BLOCK * 2)
+    current_tetromino = Tetromino(TETROMINOS["I"]["shape"], TETROMINOS["I"]["color"], BLOCK, BLOCK)
     landed_data = []
 
     def grid():  # joonistab grid
@@ -79,7 +83,7 @@ def main():
         tetromino_nimi = random.choice("IOTSZJL")
         shape = TETROMINOS[tetromino_nimi]["shape"]
         color = TETROMINOS[tetromino_nimi]["color"]
-        return Tetromino(shape, color, LAIUS // 2 - BLOCK * 2, 0)
+        return Tetromino(shape, color, BLOCK, 0)
 
     while True:
         screen.fill(BLACK)
@@ -92,8 +96,8 @@ def main():
                 landed_tetromino()
                 current_tetromino = spawn_tetromino()
                 if check_collision(current_tetromino.shape, 0, 0):#kõpetab mängu kui blokid jõuab lakke
-                    pygame.quit()
-                    sys.exit()
+                    screen = pygame.display.set_mode((300, 600))
+                    return
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -125,8 +129,8 @@ def main():
         current_tetromino.draw(screen) #joonistab hetkese bloki ekraanile
         for (x, y), color in landed_data: #joonistab maandunud blokid ekraanile
             pygame.draw.rect(screen, color, (x * BLOCK, y * BLOCK, BLOCK, BLOCK))
+        clock.tick(FPS)
         pygame.display.update()
 
 if __name__ == "__main__":
-    from menu import run_menu  # Importing the menu
-    run_menu(main)
+    run_menu()

@@ -1,10 +1,12 @@
-# Tetris screen size
+
+
 VEERUD = 10
 READ = 20
-BLOCK = 30  # A single unit that makes up a block
+BLOCK = 30
 LAIUS = BLOCK * VEERUD
 KÕRGUS = BLOCK * READ
 
+FPS = 60
 # Colors
 GREY = (128, 128, 128)
 BLACK = (0, 0, 0)

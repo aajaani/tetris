@@ -1,7 +1,7 @@
 import pygame
 import sys
 import json
-from konstandid import BLOCK, LAIUS, KÕRGUS, WHITE, BLACK
+from konstandid import*
 from main import*
 def load_settings():
     with open('settings.json', 'r') as f:
@@ -29,13 +29,12 @@ def run_menu():
 
     menu_running = True
     while menu_running:
-        screen.fill(BLACK)
+        screen.blit(pygame.image.load("menüü.png"), (0,0))
 
-        # Draw buttons
-        play_button = draw_button(screen, 'MÄNGI', 150, 250)
-        settings_button = draw_button(screen, 'Sätted', 150, 350)
+        # nupud
+        play_button = draw_button(screen, 'MÄNGI', 150, 200)
+        settings_button = draw_button(screen, 'Sätted', 150, 300)
 
-        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -56,27 +55,51 @@ def run_settings_menu():
     while settings_running:
         screen.fill(BLACK)
         rows_button = draw_button(screen, f'Read: {settings["rows"]}', 150, 250)
-        columns_button = draw_button(screen, f'Veerud: {settings["columns"]}', 150, 350)
+        rows_button_increase = draw_button(screen, "+", 65, 250)
+        rows_button_decrease = draw_button(screen, "-", 235, 250)
+
+        columns_button = draw_button(screen, f'Veerud: {settings["columns"]}', 150, 300)
+        columns_button_increase = draw_button(screen, "+", 55, 300)
+        columns_button_decrease = draw_button(screen, "-", 240, 300)
+
+        Default_button = draw_button(screen, "Default", 150, 350)
+
+
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if rows_button.collidepoint(pygame.mouse.get_pos()):
+                mouse_pos=pygame.mouse.get_pos()
+                if rows_button_increase.collidepoint(mouse_pos):
                     settings["rows"] += 5  # Increase rows by 5 for each click
-                    if settings["rows"] > 25:  # Maximum rows set to 30
-                        settings["rows"] = 5  # Loop back to minimum rows
-                    save_settings(settings)
-                elif columns_button.collidepoint(pygame.mouse.get_pos()):
+                    if settings["rows"] > 30:  # Maximum rows set to 30
+                        settings["rows"] = 10  # Loop back to minimum rows
+                if rows_button_decrease.collidepoint(mouse_pos):
+                    settings["rows"] -= 5  # Increase rows by 5 for each click
+                    if settings["rows"] < 10:  # Maximum rows set to 30
+                        settings["rows"] = 10  # Loop back to minimum rows
+                elif columns_button_increase.collidepoint(mouse_pos):
                     settings["columns"] += 5  # Increase columns by 5 for each click
                     if settings["columns"] > 30:  # Maximum columns set to 30
                         settings["columns"] = 5  # Loop back to minimum columns
-                    save_settings(settings)
-                back_button = draw_button(screen, 'Tagasi', 150, 450)
-                pygame.display.update()
+                elif columns_button_decrease.collidepoint(mouse_pos):
+                    settings["columns"] -= 5  # Increase columns by 5 for each click
+                    if settings["columns"] < 5:  # Maximum columns set to 30
+                        settings["columns"] = 5  # Loop back to minimum columns
+                elif Default_button.collidepoint(mouse_pos):
+                    settings["columns"] = 10
+                    settings["rows"] = 20
+            back_button = draw_button(screen, 'Tagasi', 150, 450)
+            pygame.display.flip()
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if back_button.collidepoint(pygame.mouse.get_pos()):
                     settings_running=False
+                    pygame.display.update()
+
+    save_settings(settings)
     pygame.display.flip()
 
 
