@@ -5,45 +5,48 @@ import random
 from pygame.locals import *
 from klassid import*
 from konstandid import*
-from menu import run_menu  # Importing the menu
+from menu import*
 
 
-# Load settings from JSON file
+# Laeb sätted settings.json failist
 def load_settings():
     try:
         with open('settings.json', 'r') as f:
             return json.load(f)
     except FileNotFoundError:
-        # If no settings file, create one with default values
-        settings = {"columns": VEERUD, "rows": READ}
+        # Kui faili pole, siis loob ise faili
+        settings = {"veerud": VEERUD, "read": READ}
         save_settings(settings)
         return settings
 
-# Save settings to JSON file
+# salvestab sätted Json faili
 def save_settings(settings):
     with open('settings.json', 'w') as f:
         json.dump(settings, f)
 
-# Initialize settings
 
-# Block movement down timer
+# Blocki alla liigutamise timer
 move_wait = 350
 move_down_time = 100
 
-# Main game function
+# Mängu peafunktsioon
 def main():
     settings = load_settings()
-    VEERUD = settings.get('columns', 10)
-    READ = settings.get('rows', 20)
+    VEERUD = settings.get('veerud', 10)
+    READ = settings.get('read', 20)
     LAIUS = BLOCK * VEERUD
     KÕRGUS = BLOCK * READ
 
     pygame.init()
     pygame.display.set_caption("Tetris")
+
     clock=pygame.time.Clock()
     clock.tick(FPS)
+
     screen = pygame.display.set_mode((LAIUS, KÕRGUS))
+
     move_time = pygame.time.get_ticks()
+
     current_tetromino = Tetromino(TETROMINOS["I"]["shape"], TETROMINOS["I"]["color"], BLOCK, BLOCK)
     landed_data = []
 
@@ -63,7 +66,7 @@ def main():
                 return True
         return False
 
-    def clear_rows(): #puhastab read
+    def clear_read(): #puhastab read
         nonlocal landed_data
         for y in range(READ):
             if all((x, y) in [coord for coord, _ in landed_data] for x in range(VEERUD)):
@@ -77,7 +80,7 @@ def main():
             x = (current_tetromino.x + coord[0] * BLOCK) // BLOCK
             y = (current_tetromino.y + coord[1] * BLOCK) // BLOCK
             landed_data.append(((x, y), current_tetromino.color))
-        clear_rows() #kui rida täis siis puhastab
+        clear_read() #kui rida täis siis puhastab
 
     def spawn_tetromino():
         tetromino_nimi = random.choice("IOTSZJL")
@@ -97,7 +100,7 @@ def main():
                 current_tetromino = spawn_tetromino()
                 if check_collision(current_tetromino.shape, 0, 0):#kõpetab mängu kui blokid jõuab lakke
                     screen = pygame.display.set_mode((300, 600))
-                    return
+                    return #Läheb menüüsse tagasi
 
         for event in pygame.event.get():
             if event.type == QUIT:

@@ -1,9 +1,5 @@
-import pygame
-import sys
-import json
-from konstandid import*
 from main import*
-def load_settings():
+def load_settings():  #Hetkel on eraldi json fail veerude ja ridade muutmiseks, hiljem saab lisada sätte kiiruse muutmiseks jne
     with open('settings.json', 'r') as f:
         return json.load(f)
 
@@ -11,7 +7,7 @@ def save_settings(settings):
     with open('settings.json', 'w') as f:
         json.dump(settings, f, indent=4)
 
-def draw_button(screen, button_text, center_x, center_y, action=None):
+def draw_button(screen, button_text, center_x, center_y, action=None): #Funktsioon nuppude joonistamiseks
     font = pygame.font.Font(None, 36)
     text = font.render(button_text, True, WHITE)
     text_rect = text.get_rect(center=(center_x, center_y))
@@ -22,20 +18,20 @@ def draw_button(screen, button_text, center_x, center_y, action=None):
     screen.blit(text, text_rect)
     return button_rect
 
-def run_menu():
+def run_menu(): #menüü
     pygame.init()
     screen = pygame.display.set_mode((300, 600))
-    pygame.display.set_caption("Tetris Menu")
+    pygame.display.set_caption("Tetris")
 
     menu_running = True
     while menu_running:
-        screen.blit(pygame.image.load("menüü.png"), (0,0))
+        screen.blit(pygame.image.load("menüü.png"), (0,0)) #Menüü taustapilt
 
         # nupud
         play_button = draw_button(screen, 'MÄNGI', 150, 200)
         settings_button = draw_button(screen, 'Sätted', 150, 300)
 
-        for event in pygame.event.get():
+        for event in pygame.event.get(): #Nupuvajutuse kontroll
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -47,51 +43,48 @@ def run_menu():
 
         pygame.display.flip()
 
-def run_settings_menu():
+def run_settings_menu(): #Sätete menüü
     settings = load_settings()
     screen = pygame.display.get_surface()
     settings_running = True
 
     while settings_running:
         screen.fill(BLACK)
-        rows_button = draw_button(screen, f'Read: {settings["rows"]}', 150, 250)
-        rows_button_increase = draw_button(screen, "+", 65, 250)
-        rows_button_decrease = draw_button(screen, "-", 235, 250)
+        read_button = draw_button(screen, f'Read: {settings["read"]}', 150, 250)
+        read_button_increase = draw_button(screen, "+", 65, 250)
+        read_button_decrease = draw_button(screen, "-", 235, 250)
 
-        columns_button = draw_button(screen, f'Veerud: {settings["columns"]}', 150, 300)
-        columns_button_increase = draw_button(screen, "+", 55, 300)
-        columns_button_decrease = draw_button(screen, "-", 240, 300)
+        veerud_button = draw_button(screen, f'Veerud: {settings["veerud"]}', 150, 300)
+        veerud_button_increase = draw_button(screen, "+", 55, 300)
+        veerud_button_decrease = draw_button(screen, "-", 240, 300)
 
         Default_button = draw_button(screen, "Default", 150, 350)
 
-
-
-
-        for event in pygame.event.get():
+        for event in pygame.event.get(): #Kontrollib, kas ja mis nuppu vajutati, ja reageerib vastavalt
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos=pygame.mouse.get_pos()
-                if rows_button_increase.collidepoint(mouse_pos):
-                    settings["rows"] += 5  # Increase rows by 5 for each click
-                    if settings["rows"] > 30:  # Maximum rows set to 30
-                        settings["rows"] = 10  # Loop back to minimum rows
-                if rows_button_decrease.collidepoint(mouse_pos):
-                    settings["rows"] -= 5  # Increase rows by 5 for each click
-                    if settings["rows"] < 10:  # Maximum rows set to 30
-                        settings["rows"] = 10  # Loop back to minimum rows
-                elif columns_button_increase.collidepoint(mouse_pos):
-                    settings["columns"] += 5  # Increase columns by 5 for each click
-                    if settings["columns"] > 30:  # Maximum columns set to 30
-                        settings["columns"] = 5  # Loop back to minimum columns
-                elif columns_button_decrease.collidepoint(mouse_pos):
-                    settings["columns"] -= 5  # Increase columns by 5 for each click
-                    if settings["columns"] < 5:  # Maximum columns set to 30
-                        settings["columns"] = 5  # Loop back to minimum columns
+                if read_button_increase.collidepoint(mouse_pos):
+                    settings["read"] += 5  # suurendab vajutusega ridasi 5 võrra
+                    if settings["read"] > 30:  # Max ridade arv on 30
+                        settings["read"] = 10  # Kui läheb üle 30 siis loopib tagasi algusesse
+                if read_button_decrease.collidepoint(mouse_pos):
+                    settings["read"] -= 5
+                    if settings["read"] < 10:
+                        settings["read"] = 10
+                elif veerud_button_increase.collidepoint(mouse_pos):
+                    settings["veerud"] += 5
+                    if settings["veerud"] > 30:
+                        settings["veerud"] = 5
+                elif veerud_button_decrease.collidepoint(mouse_pos):
+                    settings["veerud"] -= 5
+                    if settings["veerud"] < 5:
+                        settings["veerud"] = 5
                 elif Default_button.collidepoint(mouse_pos):
-                    settings["columns"] = 10
-                    settings["rows"] = 20
+                    settings["veerud"] = 10
+                    settings["read"] = 20
             back_button = draw_button(screen, 'Tagasi', 150, 450)
             pygame.display.flip()
             if event.type == pygame.MOUSEBUTTONDOWN:
