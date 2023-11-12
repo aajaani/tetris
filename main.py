@@ -47,7 +47,7 @@ def main():
 
     move_time = pygame.time.get_ticks()
 
-    current_tetromino = Tetromino(TETROMINOS["I"]["shape"], TETROMINOS["I"]["color"], BLOCK, BLOCK)
+    current_tetromino = Tetromino(TETROMINOS["I"]["shape"], TETROMINOS["I"]["color"], (BLOCK*(VEERUD//2)),0)
     landed_data = []
 
     def grid():  # joonistab grid
@@ -86,7 +86,7 @@ def main():
         tetromino_nimi = random.choice("IOTSZJL")
         shape = TETROMINOS[tetromino_nimi]["shape"]
         color = TETROMINOS[tetromino_nimi]["color"]
-        return Tetromino(shape, color, BLOCK, 0)
+        return Tetromino(shape, color, (BLOCK*(VEERUD//2)), 0)
 
     while True:
         screen.fill(BLACK)
