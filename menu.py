@@ -30,6 +30,8 @@ def run_menu(): #menüü
         # nupud
         play_button = draw_button(screen, 'MÄNGI', 150, 200)
         settings_button = draw_button(screen, 'Sätted', 150, 300)
+        quit_button = draw_button(screen, 'QUIT', 150, 400, action='quit')
+        scores_button = draw_button(screen, 'Vaata eelmisi skoore', 150, 500, action='check_scores')
 
         for event in pygame.event.get(): #Nupuvajutuse kontroll
             if event.type == pygame.QUIT:
@@ -41,8 +43,6 @@ def run_menu(): #menüü
                 elif settings_button.collidepoint(pygame.mouse.get_pos()):
                     run_settings_menu()
                     
-    quit_button = draw_button(screen, 'QUIT', 150, 400, action='quit')
-    scores_button = draw_button(screen, 'Vaata eelmisi skoore', 150, 500, action='scores')
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
