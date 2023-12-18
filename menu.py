@@ -16,7 +16,7 @@ def draw_button(screen, button_text, center_x, center_y, action=None): #Funktsio
     pygame.draw.rect(screen, WHITE, button_rect, 2)
 
     screen.blit(text, text_rect)
-    return button_rect
+    return button_rect, action
 
 def run_menu(): #menüü
     pygame.init()
@@ -40,8 +40,34 @@ def run_menu(): #menüü
                     main()
                 elif settings_button.collidepoint(pygame.mouse.get_pos()):
                     run_settings_menu()
+                    
+    quit_button = draw_button(screen, 'QUIT', 150, 400, action='quit')
+    scores_button = draw_button(screen, 'Vaata eelmisi skoore', 150, 500, action='scores')
 
-        pygame.display.flip()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if play_button.collidepoint(pygame.mouse.get_pos()):
+                main()
+            elif settings_button.collidepoint(pygame.mouse.get_pos()):
+                run_settings_menu()
+            elif quit_button[0].collidepoint(pygame.mouse.get_pos()):
+                pygame.quit()
+                sys.exit()
+            elif scores_button[0].collidepoint(pygame.mouse.get_pos()):
+                check_recent_scores()
+    pygame.display.flip()
+
+def check_recent_scores():
+    skooritabel = TetrisSkooritabel()  
+    recent_scores = skooritabel.get_recent_scores()  
+
+    print("Varasemad skoorid:")
+    for score in recent_scores:
+        print(score)
+
 
 def run_settings_menu(): #Sätete menüü
     settings = load_settings()
@@ -59,6 +85,8 @@ def run_settings_menu(): #Sätete menüü
         veerud_button_decrease = draw_button(screen, "-", 240, 300)
 
         Default_button = draw_button(screen, "Default", 150, 350)
+        quit_button = draw_button(screen, 'QUIT', 150, 500, action='quit')
+        check_scores_button = draw_button(screen, 'Check Recent Scores', 150, 400, action='check_scores')
 
         for event in pygame.event.get(): #Kontrollib, kas ja mis nuppu vajutati, ja reageerib vastavalt
             if event.type == pygame.QUIT:
@@ -85,12 +113,20 @@ def run_settings_menu(): #Sätete menüü
                 elif Default_button.collidepoint(mouse_pos):
                     settings["veerud"] = 10
                     settings["read"] = 20
-            back_button = draw_button(screen, 'Tagasi', 150, 450)
-            pygame.display.flip()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if back_button.collidepoint(pygame.mouse.get_pos()):
-                    settings_running=False
+                elif quit_button[0].collidepoint(mouse_pos):
+                    settings_running = False
                     pygame.display.update()
+                    pygame.quit()
+                    sys.exit()
+                elif check_scores_button[0].collidepoint(mouse_pos):
+                    check_recent_scores()
+
+        back_button = draw_button(screen, 'Tagasi', 150, 450)
+        pygame.display.flip()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if back_button.collidepoint(pygame.mouse.get_pos()):
+                settings_running=False
+                pygame.display.update()
 
     save_settings(settings)
     pygame.display.flip()
