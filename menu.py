@@ -16,7 +16,7 @@ def draw_button(screen, button_text, center_x, center_y, action=None): #Funktsio
     pygame.draw.rect(screen, WHITE, button_rect, 2)
 
     screen.blit(text, text_rect)
-    return button_rect, action
+    return button_rect
 
 def run_menu(): #menüü
     pygame.init()
