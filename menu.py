@@ -12,6 +12,9 @@ def draw_button(screen, button_text, center_x, center_y, action=None): #Funktsio
     text = font.render(button_text, True, WHITE)
     text_rect = text.get_rect(center=(center_x, center_y))
 
+    button_rect = text.get_rect(center=(center_x, center_y))  
+    button_rect.inflate_ip(20, 10)  
+
     button_rect = text_rect.inflate(20, 10)
     pygame.draw.rect(screen, WHITE, button_rect, 2)
 
