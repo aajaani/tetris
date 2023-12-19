@@ -1,5 +1,6 @@
-import random
 import pygame
+
+
 class TetrisSkooritabel:
     def __init__(self):
         self.skoor = 0
@@ -11,7 +12,10 @@ class TetrisSkooritabel:
         self.multiplier_end_time = pygame.time.get_ticks() + 5000  # 5 sekundit
 
     def check_multiplier_timeout(self):
-        if self.multiplier_active and pygame.time.get_ticks() > self.multiplier_end_time:
+        if (
+            self.multiplier_active
+            and pygame.time.get_ticks() > self.multiplier_end_time
+        ):
             self.multiplier_active = False
 
     def kustuta_read(self, kustutatud_read):
@@ -27,6 +31,3 @@ class TetrisSkooritabel:
 
     def saa_skoor(self):
         return self.skoor
-
-
-

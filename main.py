@@ -1,6 +1,5 @@
 import pygame
 import sys
-import json
 import random
 from pygame.locals import *
 from klassid import *
@@ -8,32 +7,19 @@ from konstandid import *
 from menu import *
 from skoor import TetrisSkooritabel  # Import the TetrisSkooritabel class from skoor.py
 
-
-
-# Laeb sätted settings.json failist
-def load_settings():
-    try:
-        with open('settings.json', 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        # Kui faili pole, siis loob ise faili
-        settings = {"veerud": VEERUD, "read": READ}
-        save_settings(settings)
-        return settings
-
-# salvestab sätted Json faili
-def save_settings(settings):
-    with open('settings.json', 'w') as f:
-        json.dump(settings, f)
-
 move_wait = 350
 move_down_time = 100
 
+
 # Mängu peafunktsioon
-def main():
+def main(mode="normal"):
     settings = load_settings()
-    VEERUD = settings.get('veerud', 10)
-    READ = settings.get('read', 20)
+    if mode == "random":
+        VEERUD = random.randint(5, 30)
+        READ = random.randint(5, 10)
+    else:
+        VEERUD = settings.get("veerud", 10)
+        READ = settings.get("read", 20)
     LAIUS = BLOCK * VEERUD
     KÕRGUS = BLOCK * READ
 
@@ -48,7 +34,9 @@ def main():
 
     move_time = pygame.time.get_ticks()
 
-    current_tetromino = Tetromino(TETROMINOS["I"]["shape"], TETROMINOS["I"]["color"], (BLOCK * (VEERUD // 2)), 0)
+    current_tetromino = Tetromino(
+        TETROMINOS["I"]["shape"], TETROMINOS["I"]["color"], (BLOCK * (VEERUD // 2)), 0
+    )
     landed_data = []
 
     skooritabel = TetrisSkooritabel()  # Create an instance of TetrisSkooritabel
@@ -73,7 +61,8 @@ def main():
                     flash_color = YELLOW
                 last_flash_switch = pygame.time.get_ticks()
             multiplier_text = font.render("2x", True, flash_color)
-            screen.blit(multiplier_text, (LAIUS-50, 5))
+            screen.blit(multiplier_text, (LAIUS - 50, 5))
+
     def check_collision(shape, dx, dy):  # blokkidevaheline collision
         for coord in shape:
             x = (current_tetromino.x + coord[0] * BLOCK + dx) // BLOCK
@@ -88,9 +77,13 @@ def main():
         lugeja = 0
         nonlocal landed_data
         for y in range(READ):
-            if all((x, y) in [coord for coord, _ in landed_data] for x in range(VEERUD)):
-                lugeja += 1  #Kustuatud ridade lugeja
-                landed_data = [(coord, color) for coord, color in landed_data if coord[1] != y]
+            if all(
+                (x, y) in [coord for coord, _ in landed_data] for x in range(VEERUD)
+            ):
+                lugeja += 1  # Kustuatud ridade lugeja
+                landed_data = [
+                    (coord, color) for coord, color in landed_data if coord[1] != y
+                ]
                 for i, (coord, color) in enumerate(landed_data):
                     if coord[1] < y:
                         landed_data[i] = ((coord[0], coord[1] + 1), color)
@@ -99,7 +92,7 @@ def main():
             skooritabel.kustuta_read(lugeja)
 
     def maandunud_teromino():
-    # peab arvet maandunud blokkie üle
+        # peab arvet maandunud blokkie üle
         for coord in current_tetromino.shape:
             x = (current_tetromino.x + coord[0] * BLOCK) // BLOCK
             y = (current_tetromino.y + coord[1] * BLOCK) // BLOCK
@@ -124,15 +117,24 @@ def main():
         if not skooritabel.multiplier_active:
             global move_wait
             move_wait = 350
-        if current_time - move_time > move_wait:  # blokk liigub alla kui kindel ajavahemik läbitud
+        if (
+            current_time - move_time > move_wait
+        ):  # blokk liigub alla kui kindel ajavahemik läbitud
             if not check_collision(current_tetromino.shape, 0, BLOCK):
                 current_tetromino.move(0, BLOCK)
                 move_time = current_time
             else:  # kui ei saa alla liikuda enam, siis spawnib uue
                 maandunud_teromino()
                 current_tetromino = spawn_tetromino()
-                if check_collision(current_tetromino.shape, 0, 0):  # kõpetab mängu kui blokid jõuab lakke
+                if check_collision(
+                    current_tetromino.shape, 0, 0
+                ):  # kõpetab mängu kui blokid jõuab lakke
                     screen = pygame.display.set_mode((300, 600))
+                    settings["skoor"].append(skooritabel.skoor)
+                    settings["skoor"] = sorted(settings["skoor"], reverse=True)[
+                        :9
+                    ]  # sorteeri ja kustuta liigsed skoorid ära
+                    save_settings(settings)
                     return  # Läheb menüüsse tagasi
 
         for event in pygame.event.get():
@@ -141,10 +143,14 @@ def main():
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 # vasakule liikumine
-                if event.key == pygame.K_LEFT and not check_collision(current_tetromino.shape, -BLOCK, 0):
+                if event.key == pygame.K_LEFT and not check_collision(
+                    current_tetromino.shape, -BLOCK, 0
+                ):
                     current_tetromino.move(-BLOCK, 0)
                 # paremale liikumine
-                elif event.key == pygame.K_RIGHT and not check_collision(current_tetromino.shape, BLOCK, 0):
+                elif event.key == pygame.K_RIGHT and not check_collision(
+                    current_tetromino.shape, BLOCK, 0
+                ):
                     current_tetromino.move(BLOCK, 0)
                 # pööramine
                 elif event.key == pygame.K_SPACE:
@@ -169,6 +175,7 @@ def main():
 
         clock.tick(FPS)
         pygame.display.update()
+
 
 if __name__ == "__main__":
     run_menu()
